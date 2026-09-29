@@ -1,8 +1,12 @@
-# jetbrains-fcitx-caret-fix
+# PyCharm / JetBrains 输入法候选框不跟随光标修复
+
+项目：`jetbrains-fcitx-caret-fix` · Linux / X11 / Fcitx / 搜狗输入法
 
 [English](README.en.md) · [安装包与适配案例](docs/COMPATIBILITY.md) · [复用思路与适配流程](docs/PORTING.md)
 
 作者与维护者：[yelianna1001@gmail.com](mailto:yelianna1001@gmail.com)
+
+**典型现象：在 Ubuntu / Linux 上，搜狗或 Fcitx 中文输入法的候选框固定在 PyCharm 窗口左下角，不随编辑光标移动，而其他软件输入正常。** 本项目记录了这一问题的定位和修复，并提供可供其他版本适配的源码与流程。
 
 为 JetBrains IDE 在 Linux X11 + Fcitx / 搜狗环境下的候选框跟随问题，提供**可复用的排查与坐标修正思路、参考源码和可回滚安装器**。当候选框固定在 IDE 左下角、无法跟随编辑光标时，沿“编辑器光标位置 → 坐标转换 → 输入法位置更新”这条链路定位并修复问题。
 
@@ -86,6 +90,27 @@ bash package.sh
 新系统构建的 `.so` 可能要求更高的 glibc。给旧设备发布时应在相应旧系统构建并实测；GitHub CI 产物不自动视为 Ubuntu 18.04 可用。详见[测试](docs/TESTING.md)与[发布](docs/RELEASING.md)。
 
 ## 适配与反馈
+
+### 不想升级 PyCharm，可以尝试这个方案吗？
+
+可以参考这里的做法，在现有 IDE 上核对输入法链路并适配。原案例保留 PyCharm 2021.1.3，使用其自带 JBR，通过 Java agent 与 JNI 更新 XIM 候选位置。已有按同一思路适配 PyCharm 2022 + JBR 17 的反馈，参见[适配案例](docs/COMPATIBILITY.md)。
+
+### 与 JetBrainsRuntime-for-Linux-x64 有什么区别？
+
+[RikudouPatrickstar/JetBrainsRuntime-for-Linux-x64](https://github.com/RikudouPatrickstar/JetBrainsRuntime-for-Linux-x64) 也针对 Linux 下 Fcitx 候选框不跟随光标的问题，提供打过补丁的 JBR 编译产物。两种实现处理的是相关问题，修改的位置不同：
+
+| 路线 | 实现与使用方式 |
+| --- | --- |
+| 打补丁并构建 JBR | 使用该项目提供的运行时，按其文档替换 IDE 的 JBR 目录 |
+| 本项目的 agent / JNI 参考实现 | 在 IDE 进程中读取编辑光标坐标并更新 XIM 位置，通过启动参数加载桥接库，提供安装备份与回退 |
+
+本项目的安装器会选用 IDE 已带的 JBR，并调整启动参数；原先使用其他 JDK 的设备仍应核对字体和缩放。选择路线时，可按目标 JBR 的可用实现、输入法后端和验证结果判断。相关的历史问题可见 [JetBrainsRuntime #32](https://github.com/JetBrains/JetBrainsRuntime/issues/32)。
+
+### 让 AI 适配其他版本，从哪里开始？
+
+将本仓库链接或迁移包与上面的完整提示词一起提供，让它先读取设备环境、复现问题，再核对接口并隔离验证。具体步骤见 [PORTING.md](docs/PORTING.md)。
+
+### 提交适配结果
 
 遇到相似问题可参照 [PORTING.md](docs/PORTING.md) 定位坐标链路、核对目标接口并建立对应实现。欢迎补充新的适配案例、源码差异和验证结果，帮助更多设备复用。
 

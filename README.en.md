@@ -1,8 +1,12 @@
-# jetbrains-fcitx-caret-fix
+# PyCharm / JetBrains IME candidate window not following the cursor
+
+`jetbrains-fcitx-caret-fix` · Linux / X11 / Fcitx / Sogou
 
 [中文说明](README.md)
 
 Author and maintainer: [yelianna1001@gmail.com](mailto:yelianna1001@gmail.com)
+
+**Typical symptom:** on Ubuntu/Linux, the Chinese IME candidate popup stays in the bottom-left corner of PyCharm instead of following the text cursor (caret), while input works normally in other applications. This project documents the diagnosis and fix, with source and a workflow for adapting it to other versions.
 
 A **reusable diagnostic and coordinate-update approach**, reference implementation and reversible installer for caret-following problems in JetBrains IDEs on Linux X11 with Fcitx/Sogou. It traces the path from editor caret geometry through coordinate conversion to input-method position updates when the candidate window remains in the IDE's lower-left corner.
 
@@ -57,5 +61,23 @@ bash package.sh
 Set `CARET_BUILD_JDK` and `CARET_PYTHON` to use specific installed tools. `payload/`, `SHA256SUMS`, `build/` and `dist/` are generated and ignored by Git. Installers in ready-made releases need neither Python nor a compiler. Build native release binaries on an OS compatible with the oldest target; CI on a newer Ubuntu does not prove compatibility with older glibc.
 
 Installer tests use temporary mock IDEs and commands: they never load the JNI library into a desktop IDE. See [validation evidence](VALIDATION.md), [adaptation records](docs/COMPATIBILITY.md), and [porting notes](docs/PORTING.md) for the workflow and target checks. Contributions with new adaptation results, code changes and validation records are welcome.
+
+## Frequently asked questions
+
+### Can I keep my current PyCharm version?
+
+The original case kept PyCharm 2021.1.3 and used its bundled JBR, loading a Java agent and JNI bridge to update XIM candidate geometry. The maintainer also reports a successful PyCharm 2022/JBR 17 adaptation using the same workflow. See the [adaptation records](docs/COMPATIBILITY.md).
+
+### How does this compare with JetBrainsRuntime-for-Linux-x64?
+
+[RikudouPatrickstar/JetBrainsRuntime-for-Linux-x64](https://github.com/RikudouPatrickstar/JetBrainsRuntime-for-Linux-x64) addresses the related Fcitx caret-following problem by distributing patched JBR builds. Its documented installation replaces the IDE's JBR directory.
+
+This project instead provides an agent/JNI reference implementation that reads editor caret geometry and updates the XIM position within the IDE process. Its installer selects the IDE's existing bundled JBR, adds launch parameters and preserves a rollback copy of the launcher. Selecting that JBR can still affect fonts or scaling if another JDK was previously used.
+
+Both are approaches to the Linux IME positioning problem. Select and validate an implementation for the target runtime and input backend. For historical context, see [JetBrainsRuntime issue #32](https://github.com/JetBrains/JetBrainsRuntime/issues/32).
+
+### How can an AI coding assistant adapt this to another environment?
+
+Provide the repository or migration package with the prompt above. Have it inspect the actual environment, reproduce the issue, check interfaces and validate changes in isolation. Follow the [porting guide](docs/PORTING.md), then contribute the resulting versions, changes and validation evidence.
 
 [MIT license](LICENSE). See [third-party notices](THIRD_PARTY_NOTICES.md). This is an independent project, not an official JetBrains, Fcitx or Sogou product.
