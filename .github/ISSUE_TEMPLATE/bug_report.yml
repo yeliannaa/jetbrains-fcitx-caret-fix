@@ -1,0 +1,37 @@
+name: Bug or compatibility report / 故障与兼容反馈
+description: Report installer or caret-position behavior, with exact versions.
+body:
+  - type: input
+    id: ide
+    attributes:
+      label: IDE version and full build number
+      placeholder: PyCharm Professional 2021.1.3 / PY-211.7628.24
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: Actual running Java runtime (Help → About)
+      description: Include the complete JBR version, not only Java 11 or 17.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: OS, desktop/session, input method, monitors and scaling
+      description: Include Fcitx/Sogou versions, X11/Wayland, DPI and Java UI scaling.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Steps, expected result and actual result
+      description: Does it happen without the patch? Which editor or popup is affected?
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: diagnose.sh output and relevant caret-bridge lines
+      description: Review output first; remove personal paths and unrelated content. Do not attach complete IDE configs or logs.
+      render: text

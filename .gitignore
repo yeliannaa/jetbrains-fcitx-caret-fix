@@ -1,0 +1,11 @@
+/build/
+/dist/
+/payload/
+/SHA256SUMS
+__pycache__/
+*.pyc
+.idea/
+.vscode/
+hs_err_pid*.log
+core
+core.*
