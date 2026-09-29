@@ -23,4 +23,8 @@
 
 模拟测试不执行实际 JBR 私有 ABI，不能替代新增运行时组合的 GUI 验证。最终 ZIP 的 SHA-256 随包提供；上述编译器信息同时记录在 `payload/BUILD-INFO.txt`。
 
-本目录的 CI 配置尚需首次推送后在 GitHub 运行；本地测试结果不等同于已经跑过云端 CI。
+## GitHub CI
+
+2026-09-29，首次公开提交 `2da913b69e94bfec9e7e67525de3e7d68b10f249` 的 [GitHub Actions 运行](https://github.com/yeliannaa/jetbrains-fcitx-caret-fix/actions/runs/36512492010) 已成功完成：Ubuntu 22.04 / JDK 11 / Python 3.13 环境中的 Shell 语法、源码构建、25 项模拟安装器测试和发布包校验全部通过。
+
+云端 CI 使用模拟输入法环境，不代表新增 IDE/JBR 组合通过真实桌面验证；发布附件仍使用 Ubuntu 18.04 构建的已验证载荷。
