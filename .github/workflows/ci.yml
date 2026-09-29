@@ -20,7 +20,7 @@ jobs:
         run: for script in *.sh; do bash -n "$script"; done
       - name: Build
         run: bash build.sh
-      - name: Mock installer tests (no desktop)
+      - name: Java startup and installer tests (no desktop)
         run: python3 -B -m unittest discover -s tests -v
       - name: Check package
         run: |

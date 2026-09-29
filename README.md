@@ -37,7 +37,11 @@ flowchart LR
 
 代码只更新候选位置，不读取输入内容，不模拟按键、不转移焦点、不修改皮肤或合成器。透明皮肤应继续由输入法原有窗口绘制；它并不是通用的黑框修复工具。
 
-## 直接安装 v0.1.0
+## 直接安装 v0.1.1
+
+v0.1.1 修复部分环境中提交列表复选框无法鼠标勾选、但空格可勾选的问题：补丁等待 IDE 初始化界面线程后再启动。原设备已确认完整重启后仍可正常点击，见[更新记录](CHANGELOG.md)。
+
+从 v0.1.0 升级时，先用旧包卸载，再安装新包并重启 IDE；重复执行安装器不会自动替换已安装的旧载荷。
 
 下列要求用于直接安装这个版本的预编译包。其他环境可沿用上面的思路重新适配。
 
@@ -48,12 +52,12 @@ flowchart LR
 
 ### 下载与安装
 
-从项目 Releases 下载 `jetbrains-fcitx-caret-fix-0.1.0-linux-x86_64.zip` 及同名 `.sha256` 文件，在下载目录校验、解压，然后进入解压目录执行：
+从项目 Releases 下载 `jetbrains-fcitx-caret-fix-0.1.1-linux-x86_64.zip` 及同名 `.sha256` 文件，在下载目录校验、解压，然后进入解压目录执行：
 
 ```bash
-sha256sum -c jetbrains-fcitx-caret-fix-0.1.0-linux-x86_64.zip.sha256
-unzip jetbrains-fcitx-caret-fix-0.1.0-linux-x86_64.zip
-cd jetbrains-fcitx-caret-fix-0.1.0
+sha256sum -c jetbrains-fcitx-caret-fix-0.1.1-linux-x86_64.zip.sha256
+unzip jetbrains-fcitx-caret-fix-0.1.1-linux-x86_64.zip
+cd jetbrains-fcitx-caret-fix-0.1.1
 bash install.sh --ide-dir /path/to/pycharm-2021.1.3 --check
 bash install.sh --ide-dir /path/to/pycharm-2021.1.3
 ```
@@ -70,7 +74,7 @@ bash uninstall.sh --ide-dir /path/to/pycharm-2021.1.3 --check
 bash uninstall.sh --ide-dir /path/to/pycharm-2021.1.3
 ```
 
-卸载恢复原启动脚本并保留备份归档，不依赖当前仍是旧版 JBR / 搜狗 / X11。安装后若启动脚本被另行修改，会拒绝覆盖，需人工比较。安装状态位于 IDE 下的 `.pycharm-ime-fix/`；不要删除其中的原文件备份。已有早期手动补丁的设备无需重装本包。
+卸载恢复原启动脚本并保留备份归档，不依赖当前仍是旧版 JBR / 搜狗 / X11。安装后若启动脚本被另行修改，会拒绝覆盖，需人工比较。安装状态位于 IDE 下的 `.pycharm-ime-fix/`；不要删除其中的原文件备份。已有早期手动补丁的设备应按[排查说明](docs/TROUBLESHOOTING.md)核对后更新，避免叠加安装。
 
 ## 从源码构建
 

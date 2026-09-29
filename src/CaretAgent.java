@@ -32,22 +32,64 @@ public final class CaretAgent {
             if (!"@im=fcitx".equals(System.getenv("XMODIFIERS"))) {
                 throw new IllegalStateException("Expected XMODIFIERS=@im=fcitx");
             }
+            // premain runs before the IDE installs its own class loader. Creating
+            // AWT here would give its EDT the system loader permanently: Swing
+            // cannot resolve JetBrains UI delegates (e.g. JCheckBox width is 0).
+            startWhenIdeIsReady(() -> initializeBridge(options), 180_000L);
+        } catch (Exception | LinkageError error) {
+            System.err.println("[caret-bridge] disabled: " + error);
+        }
+    }
+
+    /** Wait without touching AWT; let the IDE create its event thread first. */
+    static void startWhenIdeIsReady(Runnable initialize, long timeoutMillis) {
+        Thread waiter = new Thread(() -> {
+            long started = System.nanoTime();
+            try {
+                while ((System.nanoTime() - started) / 1_000_000L < timeoutMillis) {
+                    for (Thread thread : Thread.getAllStackTraces().keySet()) {
+                        if (!thread.isAlive() ||
+                            !thread.getClass().getName().equals("java.awt.EventDispatchThread")) continue;
+                        ClassLoader loader = thread.getContextClassLoader();
+                        if (loader == null || loader == ClassLoader.getSystemClassLoader()) continue;
+                        // Post from the IDE's thread group/AppContext, with its
+                        // loader. Never replace an existing thread's loader.
+                        Thread poster = new Thread(thread.getThreadGroup(),
+                            () -> EventQueue.invokeLater(initialize), "caret-bridge-post");
+                        poster.setContextClassLoader(loader);
+                        poster.setDaemon(true);
+                        poster.start();
+                        return;
+                    }
+                    Thread.sleep(200);
+                }
+                System.err.println("[caret-bridge] IDE event thread not ready; disabled");
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+            } catch (Exception | LinkageError error) {
+                System.err.println("[caret-bridge] startup disabled: " + error);
+            }
+        }, "caret-bridge-startup");
+        waiter.setDaemon(true);
+        waiter.start();
+    }
+
+    private static void initializeBridge(String options) {
+        try {
+            if (!Toolkit.getDefaultToolkit().getClass().getName().equals("sun.awt.X11.XToolkit")) {
+                System.err.println("[caret-bridge] X11 toolkit required; disabled");
+                return;
+            }
             methodField = Class.forName("sun.awt.im.InputContext").getDeclaredField("inputMethod");
             methodField.setAccessible(true);
             Class<?> toolkit = Class.forName("sun.awt.SunToolkit");
             awtLock = toolkit.getMethod("awtLock");
             awtUnlock = toolkit.getMethod("awtUnlock");
             System.load(Paths.get(options).toAbsolutePath().toString());
-            EventQueue.invokeLater(() -> {
-                if (!Toolkit.getDefaultToolkit().getClass().getName().equals("sun.awt.X11.XToolkit")) {
-                    System.err.println("[caret-bridge] X11 toolkit required; disabled");
-                    return;
-                }
-                Timer timer = new Timer(100, event -> tick());
-                timer.setCoalesce(true);
-                timer.start();
-                System.err.println("[caret-bridge] active; coordinate updates only");
-            });
+            Timer timer = new Timer(100, event -> tick());
+            timer.setCoalesce(true);
+            timer.start();
+            System.err.println("[caret-bridge] active; coordinate updates only");
         } catch (Exception | LinkageError error) {
             System.err.println("[caret-bridge] disabled: " + error);
         }

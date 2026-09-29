@@ -26,7 +26,11 @@ Replace the target versions for another environment. The diagnostic approach, im
 
 The Java agent reads `InputMethodRequests` caret geometry on the EDT every 100 ms. A small JNI bridge, under the AWT lock, converts screen coordinates to the XIM focus window and updates `XNSpotLocation`. The launcher supplies a Sogou-specific -50 px Y correction. It does not read typed text, synthesize keys, change focus, or replace the candidate-window renderer.
 
-## Install the ready-made v0.1.0 package
+## Install the ready-made v0.1.1 package
+
+v0.1.1 fixes Commit-list checkboxes ignoring mouse clicks while Space still works in affected environments. The agent now waits for the IDE to initialize its event thread. The original user confirmed mouse selection still works after fully restarting PyCharm. See the [changelog](CHANGELOG.md).
+
+To upgrade from v0.1.0, uninstall with the old package, install the new one, then restart the IDE. Re-running the installer does not replace an existing payload.
 
 This package targets PyCharm Professional 2021.1.3 (`PY-211.7628.24`), bundled JBR `11.0.11+9-b1341.60-jcef`, Linux x86_64/X11, Fcitx 4 and a specific Sogou 4.2.1 plugin. Exact native-library hashes are enforced. Use the adaptation workflow above to build for other environments.
 

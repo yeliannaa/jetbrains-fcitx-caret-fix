@@ -20,7 +20,7 @@ ROOT_FILES = (
 )
 TREE_FILES = (
     'src/CaretAgent.java', 'src/caret_bridge.c', 'src/MANIFEST.MF',
-    'tools/package_release.py', 'tests/test_installer.py',
+    'tools/package_release.py', 'tests/test_installer.py', 'tests/test_agent_startup.py',
     'docs/COMPATIBILITY.md', 'docs/PORTING.md', 'docs/TROUBLESHOOTING.md',
     'docs/TESTING.md', 'docs/RELEASING.md',
     '.github/workflows/ci.yml', '.github/ISSUE_TEMPLATE/bug_report.yml',
